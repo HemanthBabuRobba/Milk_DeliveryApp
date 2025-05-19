@@ -1,0 +1,128 @@
+.order-history-page {
+  text-align: center;
+  padding: 5rem 1rem 1rem;
+  background: #f9f9f9;
+  min-height: calc(100vh - 5rem);
+}
+
+.order-history-page h1 {
+  font-size: 2.5rem;
+  color: #34495e;
+  margin-bottom: 2rem;
+}
+
+.no-orders {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.order-card h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.order-card p {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 0.5rem;
+}
+
+.order-details h3 {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.order-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-details li {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item-total {
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+}
+
+.status-badge.delivered {
+  background-color: #27ae60;
+}
+
+.status-badge.pending {
+  background-color: #f39c12;
+}
+
+.status-badge.cancelled {
+  background-color: #e74c3c;
+}
+
+.reorder-button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  color: white;
+  background-color: #3498db;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem;
+}
+
+.reorder-button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .order-card {
+    padding: 1rem;
+  }
+
+  .order-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .order-card p {
+    font-size: 0.9rem;
+  }
+
+  .order-details h3 {
+    font-size: 1.1rem;
+  }
+
+  .reorder-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}

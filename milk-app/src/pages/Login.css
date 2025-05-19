@@ -1,0 +1,131 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;      /* Stack intro and form vertically */
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+  padding: 2rem 0;
+}
+
+.login-container {
+  background: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.08);
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.login-title {
+  font-size: 2rem;
+  color: #3498db;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.login-type {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.login-type label {
+  font-size: 1rem;
+  color: #34495e;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.login-type input[type="radio"] {
+  accent-color: #3498db;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.login-label {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.login-input {
+  padding: 0.7rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.login-button {
+  padding: 0.7rem 1.2rem;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.login-button:hover {
+  background: #217dbb;
+  transform: scale(1.03);
+}
+
+.login-error {
+  color: #e74c3c;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.login-intro {
+  max-width: 350px;
+  width: 100%;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #34495e;
+  background: #eaf6fb;
+  border-radius: 10px;
+  padding: 1.2rem 1rem 1rem 1rem;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.07);
+}
+
+.login-intro h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.4rem;
+  color: #3498db;
+  font-weight: 700;
+}
+
+.login-intro p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 1rem 0;
+  }
+  .login-intro,
+  .login-container {
+    max-width: 98vw;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}

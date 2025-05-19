@@ -1,0 +1,7 @@
+{
+  "name": "milk-monorepo",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run start --prefix milk-backend\" \"npm run dev --prefix milk-app\""
+  }
+}

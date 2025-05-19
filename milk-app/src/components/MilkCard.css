@@ -1,0 +1,96 @@
+.milk-card {
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px; /* Reduced padding */
+  text-align: center;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 300px; /* Restricts the card width */
+  margin: 0 auto; /* Centers the card horizontally */
+}
+
+.milk-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.milk-card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 12px; /* Reduced margin */
+}
+
+.milk-card-title {
+  font-size: 1.5rem; /* Adjusted font size */
+  margin: 8px 0; /* Reduced margin */
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.milk-card-description {
+  font-size: 0.9rem; /* Adjusted font size */
+  color: #7f8c8d;
+  line-height: 1.4;
+  margin-bottom: 8px; /* Reduced margin */
+}
+
+.milk-card-price {
+  font-size: 1rem; /* Adjusted font size */
+  color: #34495e;
+  margin: 8px 0; /* Reduced margin */
+  font-weight: bold;
+}
+
+.milk-card-button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.5em 1em; /* Reduced padding */
+  font-size: 0.9em; /* Adjusted font size */
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.milk-card-button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+.milk-card-quantity {
+  margin: 12px 0;
+  text-align: left;
+}
+
+.milk-card-select,
+.milk-card-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.milk-card-input {
+  display: block;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .milk-card {
+    padding: 16px;
+  }
+
+  .milk-card-title {
+    font-size: 1.5rem;
+  }
+
+  .milk-card-description {
+    font-size: 0.9rem;
+  }
+}

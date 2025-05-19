@@ -1,0 +1,45 @@
+.about-us-page {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Light blue gradient */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-us-page h1 {
+  font-size: 2.5rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+}
+
+.about-us-page p {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  line-height: 1.6;
+  max-width: 800px;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .about-us-page h1 {
+    font-size: 2rem;
+  }
+
+  .about-us-page p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-us-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .about-us-page p {
+    font-size: 0.9rem;
+  }
+}
