@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
 import Home from './pages/Home.jsx';
 import Product from './pages/Product.jsx';
 import Cart from './pages/Cart.jsx';
@@ -40,6 +41,12 @@ function App() {
                 setIsUserLoggedIn={setIsUserLoggedIn}
                 setIsAdminLoggedIn={setIsAdminLoggedIn}
               />
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <Signup setIsUserLoggedIn={setIsUserLoggedIn} />
             }
           />
           <Route

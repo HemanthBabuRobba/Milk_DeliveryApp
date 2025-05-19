@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './Login.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
-  const [loginType, setLoginType] = useState('User');
-  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const isUserLoggedIn = localStorage.getItem('isUserLoggedIn') === 'true';
     const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-
     if (isUserLoggedIn) {
       navigate('/home');
     } else if (isAdminLoggedIn) {
@@ -19,106 +21,109 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
     }
   }, [navigate]);
 
-  const handleLoginTypeChange = (e) => {
-    setLoginType(e.target.value);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
-  };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setAdminCredentials({ ...adminCredentials, [name]: value });
-  };
-
-  const handleLogin = () => {
-    if (loginType === 'Admin') {
-      if (adminCredentials.username === 'admin' && adminCredentials.password === 'admin123') {
-        setIsAdminLoggedIn(true);
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        navigate('/admin');
-      } else {
-        setError('Invalid Admin Credentials');
-      }
-    } else {
-      setIsUserLoggedIn(true);
-      localStorage.setItem('isUserLoggedIn', 'true');
-      navigate('/home');
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      return;
     }
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/${isAdmin ? 'admin' : 'auth'}/login`,
+        { username, password }
+      );
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user || response.data.admin));
+        
+        if (isAdmin) {
+          setIsAdminLoggedIn(true);
+          localStorage.setItem('isAdminLoggedIn', 'true');
+          navigate('/admin');
+        } else {
+          setIsUserLoggedIn(true);
+          localStorage.setItem('isUserLoggedIn', 'true');
+          navigate('/home');
+        }
+      } else {
+        setError('Invalid response from server');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      if (err.response) {
+        setError(err.response.data.message || 'Invalid credentials');
+      } else if (err.request) {
+        setError('No response from server. Please check your internet connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
     <div className="login-page">
       <div className="login-intro">
-        <h2>Welcome to Milk App 🥛</h2>
-        <p>
-          Get the freshest milk delivered to your doorstep every day.<br />
-          Fast, local, and always pure. Start your healthy day with us!
-        </p>
+        <h2>Welcome Back!</h2>
+        <p>Sign in to access your account and manage your milk orders.</p>
       </div>
-      <form
-        className="login-container"
-        onSubmit={e => {
-          e.preventDefault();
-          handleLogin();
-        }}
-        autoComplete="off"
-      >
-        <div className="login-title">Login</div>
-        <div className="login-type">
-          <label>
+      <div className="login-container">
+        <h2 className="login-title">Login</h2>
+        {error && <div className="login-error">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <label className="login-label">Username</label>
+          <input
+            type="text"
+            className="login-input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username"
+            required
+          />
+          <label className="login-label">Password</label>
+          <div className="password-input-container">
             <input
-              type="radio"
-              value="User"
-              checked={loginType === 'User'}
-              onChange={handleLoginTypeChange}
+              type={showPassword ? "text" : "password"}
+              className="login-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
             />
-            <span>Login as User</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="Admin"
-              checked={loginType === 'Admin'}
-              onChange={handleLoginTypeChange}
-            />
-            <span>Login as Admin</span>
-          </label>
-        </div>
-
-        {loginType === 'Admin' && (
-          <div className="admin-credentials">
-            <label className="login-label">
-              Username
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </button>
+          </div>
+          <div className="admin-checkbox-container">
+            <label className="admin-checkbox-label">
               <input
-                className="login-input"
-                type="text"
-                name="username"
-                value={adminCredentials.username}
-                onChange={handleInputChange}
-                autoComplete="username"
-                required
+                type="checkbox"
+                className="admin-checkbox"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
               />
-            </label>
-            <label className="login-label">
-              Password
-              <input
-                className="login-input"
-                type="password"
-                name="password"
-                value={adminCredentials.password}
-                onChange={handleInputChange}
-                autoComplete="current-password"
-                required
-              />
+              Login as Admin
             </label>
           </div>
-        )}
-
-        {error && <div className="login-error">{error}</div>}
-
-        <button className="login-button" type="submit">
-          Login
-        </button>
-      </form>
+          <button type="submit" className="login-button">
+            Login
+          </button>
+        </form>
+        <div className="signup-link">
+          Don't have an account? <Link to="/signup">Sign up</Link>
+        </div>
+      </div>
     </div>
   );
 };

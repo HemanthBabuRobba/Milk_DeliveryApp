@@ -1,9 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const orderController = require('../controllers/orderController');
+const {
+  createOrder,
+  getUserOrders,
+  getOrderDetails,
+  cancelOrder
+} = require('../controllers/orderController');
+const auth = require('../middleware/auth');
 
-router.post('/', orderController.placeOrder);
-router.get('/:userId', orderController.getUserOrders);
-router.get('/', orderController.getAllOrders); // For admin
+// All order routes require authentication
+router.use(auth);
+
+// Create new order
+router.post('/', createOrder);
+
+// Get user's orders
+router.get('/', getUserOrders);
+
+// Get order details
+router.get('/:orderId', getOrderDetails);
+
+// Cancel order
+router.put('/:orderId/cancel', cancelOrder);
 
 module.exports = router;
