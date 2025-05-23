@@ -65,15 +65,15 @@ const Checkout = () => {
         <h2>Order Summary</h2>
         <ul>
           {cartItems.map((item) => (
-            <li key={item.id}>
+            <li key={item._id || item.id || `item-${item.name}-${item.quantity}`}>
               <span>{item.name} - {item.quantity}L</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
+              <span>₹{(item.price * item.quantity).toFixed(2)}</span>
             </li>
           ))}
         </ul>
-        <p>Subtotal: ${subtotal.toFixed(2)}</p>
-        <p>Delivery Charge: ${deliveryCharge.toFixed(2)}</p>
-        <p className="final-total">Total: ${finalTotal.toFixed(2)}</p>
+        <p>Subtotal: ₹{subtotal.toFixed(2)}</p>
+        <p>Delivery Charge: ₹{deliveryCharge.toFixed(2)}</p>
+        <p className="final-total">Total: ₹{finalTotal.toFixed(2)}</p>
       </div>
 
       {/* Customer Details Form */}
@@ -121,8 +121,8 @@ const Checkout = () => {
           value={deliveryPreferences.deliveryDate}
           onChange={handleDeliveryPreferenceChange}
         >
-          <option value="Today">Today</option>
-          <option value="Tomorrow">Tomorrow</option>
+          <option value="Today" key="today">Today</option>
+          <option value="Tomorrow" key="tomorrow">Tomorrow</option>
         </select>
         <label>Preferred Time Slot:</label>
         <select
@@ -130,8 +130,8 @@ const Checkout = () => {
           value={deliveryPreferences.timeSlot}
           onChange={handleDeliveryPreferenceChange}
         >
-          <option value="Morning 6–9 AM">Morning 6–9 AM</option>
-          <option value="Evening 5–8 PM">Evening 5–8 PM</option>
+          <option value="Morning 6–9 AM" key="morning">Morning 6–9 AM</option>
+          <option value="Evening 5–8 PM" key="evening">Evening 5–8 PM</option>
         </select>
       </div>
 
@@ -152,9 +152,9 @@ const Checkout = () => {
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
         >
-          <option value="Cash on Delivery">Cash on Delivery</option>
-          <option value="UPI Payment">UPI Payment</option>
-          <option value="Pay Later">Pay Later</option>
+          <option value="Cash on Delivery" key="cod">Cash on Delivery</option>
+          <option value="UPI Payment" key="upi">UPI Payment</option>
+          <option value="Pay Later" key="paylater">Pay Later</option>
         </select>
       </div>
 

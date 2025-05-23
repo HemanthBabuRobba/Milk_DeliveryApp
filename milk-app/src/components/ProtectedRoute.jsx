@@ -1,11 +1,25 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ isLoggedIn, children }) => {
+const ProtectedRoute = ({ isLoggedIn, isAdmin, children }) => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   if (!isLoggedIn) {
-    return <Navigate to="/" replace />; // Redirect to login page if not logged in
+    return <Navigate to="/login" replace />;
   }
-  return children; // Render the protected page if logged in
+
+  // If trying to access admin route without admin privileges
+  if (isAdminRoute && !isAdmin) {
+    return <Navigate to="/home" replace />;
+  }
+
+  // If admin trying to access user routes
+  if (isAdmin && !isAdminRoute) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

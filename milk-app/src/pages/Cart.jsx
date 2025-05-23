@@ -2,69 +2,85 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Cart.css';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
+import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 
 const Cart = () => {
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { cart, updateQuantity, removeFromCart, clearCart, fetchCart, loading, error: cartError } = useCart();
+  const { showSuccess, showError } = useToast();
   const [error, setError] = useState('');
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+  const [confirmDialog, setConfirmDialog] = useState({ show: false, itemId: null, message: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
   }, []);
 
-  const fetchCart = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, redirecting to login');
-        navigate('/');
-        return;
-      }
-
-      console.log('Fetching cart with token:', token);
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log('Cart data received:', response.data);
-      setCart(response.data);
-    } catch (error) {
-      console.error('Error fetching cart:', error.response || error);
-      setError(error.response?.data?.message || 'Failed to load cart items');
-    } finally {
-      setLoading(false);
-    }
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
   };
 
-  const updateQuantity = async (productId, newQuantity) => {
+  const calculateTotal = () => {
+    return cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const handleUpdateQuantity = async (itemId, newQuantity) => {
     try {
-      if (newQuantity < 1) return;
-      
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/');
         return;
       }
 
-      console.log('Updating quantity:', { productId, newQuantity });
+      // Find the cart item to check stock
+      const cartItem = cart.items.find(item => item._id === itemId);
+      if (!cartItem) {
+        showError('Item not found in cart');
+        return;
+      }
+
+      // Validate quantity against product stock
+      if (newQuantity > cartItem.product.quantity) {
+        showError(`Only ${cartItem.product.quantity} units available in stock`);
+        return;
+      }
+
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/cart/update`,
-        { 
-          productId: productId.toString(), // Ensure productId is a string
-          quantity: parseInt(newQuantity) // Ensure quantity is a number
-        },
-        { 
+        `${import.meta.env.VITE_API_URL}/api/cart/update/${itemId}`,
+        { quantity: newQuantity },
+        {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
-          } 
+          }
         }
       );
-      console.log('Update response:', response.data);
-      setCart(response.data);
+
+      if (response.data) {
+        updateQuantity(itemId, newQuantity);
+        showSuccess('Cart updated successfully');
+      }
     } catch (error) {
-      console.error('Error updating quantity:', error.response || error);
-      setError(error.response?.data?.message || 'Failed to update quantity');
+      console.error('Error updating cart:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update cart';
+      setError(errorMessage);
+      showError(errorMessage);
+      fetchCart(); // Refresh cart on error
+    }
+  };
+
+  const handleRemove = async (id) => {
+    try {
+      await removeFromCart(id);
+      showSuccess('Item removed from cart');
+    } catch (error) {
+      showError(error.response?.data?.message || 'Failed to remove item');
+      fetchCart(); // Refresh cart on error
     }
   };
 
@@ -72,59 +88,113 @@ const Cart = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/');
+        navigate('/login');
         return;
       }
 
-      const response = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/cart/remove/${productId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setCart(response.data);
+      setConfirmDialog({
+        show: true,
+        itemId: productId,
+        message: 'Are you sure you want to remove this item from your cart?'
+      });
     } catch (error) {
-      console.error('Error removing item:', error.response || error);
-      setError(error.response?.data?.message || 'Failed to remove item');
+      console.error('Error preparing to remove item:', error);
+      showNotification('Failed to prepare item removal', 'error');
     }
   };
 
-  const clearCart = async () => {
+  const handleConfirmRemove = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
+      if (!confirmDialog.itemId) {
+        console.error('No item ID found in confirmDialog');
+        showNotification('Invalid item selected', 'error');
         return;
       }
 
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/cart/clear`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCart({ items: [], totalAmount: 0 });
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      // Call the API to remove the item
+      const response = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/cart/remove/${confirmDialog.itemId}`,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data) {
+        // Update local cart state
+        await removeFromCart(confirmDialog.itemId);
+        showSuccess('Item removed from cart successfully');
+        // Refresh cart to ensure UI is in sync with database
+        await fetchCart();
+      }
     } catch (error) {
-      console.error('Error clearing cart:', error.response || error);
-      setError(error.response?.data?.message || 'Failed to clear cart');
+      console.error('Error removing item:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to remove item';
+      showNotification(errorMessage, 'error');
+      // Refresh cart on error to ensure UI is in sync
+      await fetchCart();
+    } finally {
+      setConfirmDialog({ show: false, itemId: null, message: '' });
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setConfirmDialog({ show: false, itemId: null, message: '' });
+  };
+
+  const handleClearCart = async () => {
+    try {
+      const confirmed = window.confirm('Are you sure you want to clear your entire cart?');
+      if (!confirmed) {
+        return;
+      }
+
+      await clearCart();
+      showSuccess('Cart cleared successfully');
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to clear cart';
+      showNotification(errorMessage, 'error');
+      fetchCart(); // Refresh cart on error
     }
   };
 
   const proceedToCheckout = () => {
-    if (cart && cart.items.length > 0) {
-      navigate('/checkout');
+    if (cart.items && cart.items.length > 0) {
+      navigate('/checkout', {
+        state: {
+          cartItems: cart.items,
+          totalPrice: calculateTotal()
+        }
+      });
     }
   };
 
   if (loading) {
     return (
       <div className="cart-container">
-        <div className="cart-loading">Loading cart...</div>
+        <div className="cart-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your cart...</p>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (cartError) {
     return (
       <div className="cart-container">
         <div className="cart-error">
-          <p>{error}</p>
-          <button onClick={() => navigate('/')}>Go to Login</button>
+          <p>{cartError}</p>
+          <button onClick={() => navigate('/login')}>Go to Login</button>
         </div>
       </div>
     );
@@ -132,37 +202,63 @@ const Cart = () => {
 
   return (
     <div className="cart-container">
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+      {confirmDialog.show && (
+        <div className="confirm-dialog-overlay">
+          <div className="confirm-dialog">
+            <p>{confirmDialog.message}</p>
+            <div className="confirm-dialog-buttons">
+              <button className="confirm-button" onClick={handleConfirmRemove}>
+                Yes, Remove
+              </button>
+              <button className="cancel-button" onClick={handleCancelRemove}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <h2>Your Cart</h2>
-      {cart && cart.items && cart.items.length > 0 ? (
+      {cart.items && cart.items.length > 0 ? (
         <>
           <div className="cart-items">
             {cart.items.map((item) => (
-              <div key={`${item.product}-${item.name}`} className="cart-item">
-                <div className="item-details">
+              <div key={item._id} className="cart-item">
+                <div className="cart-item-image">
+                  <img src={item.image} alt={item.name} />
+                </div>
+                <div className="cart-item-details">
                   <h3>{item.name}</h3>
-                  <p className="item-price">₹{item.price} per {item.unit}</p>
+                  <p className="item-price">₹{item.price.toFixed(2)} per {item.unit}</p>
                 </div>
-                <div className="item-quantity">
-                  <button
-                    onClick={() => updateQuantity(item.product, item.quantity - 1)}
-                    disabled={item.quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <span>{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.product, item.quantity + 1)}
-                  >
-                    +
-                  </button>
-                </div>
-                <div className="item-total">
-                  <p>₹{item.price * item.quantity}</p>
+                <div className="cart-item-actions">
+                  <div className="counter-container">
+                    <button
+                      className="counter-button"
+                      onClick={() => handleUpdateQuantity(item._id, Math.max(1, item.quantity - 1))}
+                      disabled={item.quantity <= 1}
+                    >
+                      <FaMinus />
+                    </button>
+                    <span className="counter-value">{item.quantity}</span>
+                    <button
+                      className="counter-button"
+                      onClick={() => handleUpdateQuantity(item._id, Math.min(item.product?.quantity || 1, item.quantity + 1))}
+                      disabled={item.quantity >= (item.product?.quantity || 1)}
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
                   <button
                     className="remove-button"
-                    onClick={() => removeItem(item.product)}
+                    onClick={() => removeItem(item._id)}
                   >
-                    Remove
+                    <FaTrash />
+                    <span>Remove</span>
                   </button>
                 </div>
               </div>
@@ -171,10 +267,10 @@ const Cart = () => {
           <div className="cart-summary">
             <div className="total-amount">
               <h3>Total Amount:</h3>
-              <p>₹{cart.totalAmount}</p>
+              <p>₹{calculateTotal().toFixed(2)}</p>
             </div>
             <div className="cart-actions">
-              <button className="clear-cart" onClick={clearCart}>
+              <button className="clear-cart" onClick={handleClearCart}>
                 Clear Cart
               </button>
               <button className="checkout-button" onClick={proceedToCheckout}>

@@ -11,6 +11,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  userDetails: {
+    username: String,
+    email: String
+  },
   items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
@@ -81,17 +85,35 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Generate unique order ID before saving
+// Generate unique order ID and set user details before saving
 orderSchema.pre('save', async function(next) {
-  if (!this.orderId) {
-    const date = new Date();
-    const year = date.getFullYear().toString().slice(-2);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    this.orderId = `ORD${year}${month}${day}${random}`;
+  try {
+    // Generate order ID if not exists
+    if (!this.orderId) {
+      const date = new Date();
+      const year = date.getFullYear().toString().slice(-2);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      this.orderId = `ORD${year}${month}${day}${random}`;
+    }
+
+    // Set user details if not exists
+    if (!this.userDetails) {
+      const User = mongoose.model('User');
+      const user = await User.findById(this.user).select('username email');
+      if (user) {
+        this.userDetails = {
+          username: user.username,
+          email: user.email
+        };
+      }
+    }
+
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 });
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -1,38 +1,54 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
 
-  const handleIncorrectLogin = () => {
-    // Clear any stored login state (optional)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/', { replace: true });
+    }
+  }, []); // Empty dependency array since we only want to check once on mount
+
+  const handleLogout = () => {
+    // Clear all auth-related data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     localStorage.removeItem('isUserLoggedIn');
     localStorage.removeItem('isAdminLoggedIn');
-    navigate('/'); // Redirect to the login page
+    
+    // Navigate to login page with replace to prevent back navigation
+    navigate('/', { replace: true });
   };
 
   return (
     <div className="home-page">
-      <h1>Welcome to Milk App</h1>
-      <p>Fresh Milk Available Today!</p>
+      <h1>Welcome to SwachMilk</h1>
+      <p>Your one-stop solution for fresh milk delivery</p>
+      
       <div className="home-links">
-        <button className="home-button" onClick={() => navigate('/product')}>
-          Explore Products
-        </button>
-        <button className="home-button" onClick={() => navigate('/cart')}>
+        <Link to="/product" className="home-button">
+          Browse Products
+        </Link>
+        <Link to="/cart" className="home-button">
           View Cart
-        </button>
-        <button className="home-button" onClick={() => navigate('/order-history')}>
+        </Link>
+        <Link to="/order-history" className="home-button">
           Order History
-        </button>
+        </Link>
+        <Link to="/checkout" className="home-button">
+          Checkout
+        </Link>
       </div>
-      <div className="incorrect-login">
-        <p>
-          If you logged in incorrectly,{' '}
-          <button className="incorrect-login-button" onClick={handleIncorrectLogin}>
-            click here to log in again
-          </button>.
+
+      <div className="about-section">
+        <h2 className="about-title">About Our Service</h2>
+        <p className="about-text">
+          We deliver fresh, high-quality milk directly to your doorstep. Our commitment to quality and 
+          customer satisfaction makes us the preferred choice for daily milk delivery. Choose from our 
+          wide range of dairy products and enjoy the convenience of home delivery.
         </p>
       </div>
     </div>

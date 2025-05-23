@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -12,12 +12,14 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const isUserLoggedIn = localStorage.getItem('isUserLoggedIn') === 'true';
     const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-    if (isUserLoggedIn) {
-      navigate('/home');
-    } else if (isAdminLoggedIn) {
-      navigate('/admin');
+
+    if (token && isUserLoggedIn) {
+      navigate('/home', { replace: true });
+    } else if (token && isAdminLoggedIn) {
+      navigate('/admin', { replace: true });
     }
   }, [navigate]);
 
@@ -25,29 +27,40 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
     e.preventDefault();
     setError('');
 
-    if (!username || !password) {
-      setError('Please enter both username and password');
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/${isAdmin ? 'admin' : 'auth'}/login`,
-        { username, password }
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        { email, password, isAdmin }
       );
 
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user || response.data.admin));
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         
         if (isAdmin) {
           setIsAdminLoggedIn(true);
+          setIsUserLoggedIn(false);
           localStorage.setItem('isAdminLoggedIn', 'true');
-          navigate('/admin');
+          localStorage.setItem('isUserLoggedIn', 'false');
+          navigate('/admin', { replace: true });
         } else {
           setIsUserLoggedIn(true);
+          setIsAdminLoggedIn(false);
           localStorage.setItem('isUserLoggedIn', 'true');
-          navigate('/home');
+          localStorage.setItem('isAdminLoggedIn', 'false');
+          navigate('/home', { replace: true });
         }
       } else {
         setError('Invalid response from server');
@@ -78,13 +91,13 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
         <h2 className="login-title">Login</h2>
         {error && <div className="login-error">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <label className="login-label">Username</label>
+          <label className="login-label">Email</label>
           <input
-            type="text"
+            type="email"
             className="login-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
             required
           />
           <label className="login-label">Password</label>
@@ -111,7 +124,11 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
                 type="checkbox"
                 className="admin-checkbox"
                 checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
+                onChange={(e) => {
+                  setIsAdmin(e.target.checked);
+                  setEmail('');
+                  setPassword('');
+                }}
               />
               Login as Admin
             </label>

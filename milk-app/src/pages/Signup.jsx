@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI } from '../utils/api';
 import './Signup.css';
 
 const Signup = ({ setIsUserLoggedIn }) => {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +18,7 @@ const Signup = ({ setIsUserLoggedIn }) => {
     setError('');
 
     // Validate inputs
-    if (!username || !email || !password || !confirmPassword) {
+    if (!name.trim() || !username.trim() || !password.trim() || !confirmPassword.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -34,14 +34,10 @@ const Signup = ({ setIsUserLoggedIn }) => {
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/register`,
-        { username, email, password }
-      );
-
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+      const response = await authAPI.register({ name, username, password });
+      
+      if (response.token) {
+        localStorage.setItem('user', JSON.stringify(response.user));
         setIsUserLoggedIn(true);
         localStorage.setItem('isUserLoggedIn', 'true');
         
@@ -81,6 +77,15 @@ const Signup = ({ setIsUserLoggedIn }) => {
         <h2 className="signup-title">Sign Up</h2>
         {error && <div className="signup-error">{error}</div>}
         <form onSubmit={handleSignup}>
+          <label className="signup-label">Name</label>
+          <input
+            type="text"
+            className="signup-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+            required
+          />
           <label className="signup-label">Username</label>
           <input
             type="text"
@@ -88,15 +93,6 @@ const Signup = ({ setIsUserLoggedIn }) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Choose a username"
-            required
-          />
-          <label className="signup-label">Email</label>
-          <input
-            type="email"
-            className="signup-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
             required
           />
           <label className="signup-label">Password</label>
