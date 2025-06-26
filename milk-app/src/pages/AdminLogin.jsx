@@ -1,68 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './AdminLogin.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authAPI } from "../utils/api";
+import "./AdminLogin.css";
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ 
-    email: '', 
-    password: '',
-    isAdmin: false 
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: "",
+    isAdmin: false,
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setCredentials({
       ...credentials,
-      [e.target.name]: value
+      [e.target.name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     // Validate admin email
-    if (credentials.isAdmin && !credentials.email.endsWith('admin.com')) {
-      setError('Admin email must end with admin.com');
+    if (credentials.isAdmin && !credentials.email.endsWith("admin.com")) {
+      setError("Admin email must end with admin.com");
       setLoading(false);
       return;
     }
 
     try {
-      // Log the API URL for debugging
-      console.log('API URL:', import.meta.env.VITE_API_URL);
-      
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        email: credentials.email,
-        password: credentials.password,
-        isAdmin: credentials.isAdmin
-      });
-      
-      if (response.data.token) {
-        localStorage.setItem('adminToken', response.data.token);
-        localStorage.setItem('userType', credentials.isAdmin ? 'admin' : 'user');
-        navigate('/admin/dashboard');
+      const data = await authAPI.login(credentials);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userType", credentials.isAdmin ? "admin" : "user");
+        navigate("/admin/dashboard");
       } else {
-        setError('Invalid response from server');
+        setError("Invalid response from server");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        setError(error.response.data.message || 'Login failed');
-      } else if (error.request) {
-        // The request was made but no response was received
-        setError('No response from server. Please check your connection.');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        setError('Error setting up the request');
-      }
+      setError(error.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -110,7 +92,7 @@ const AdminLogin = () => {
             </label>
           </div>
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
@@ -118,4 +100,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin; 
+export default AdminLogin;

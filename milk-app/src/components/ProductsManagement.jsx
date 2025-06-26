@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './ProductsManagement.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./ProductsManagement.css";
 
 const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    image: '',
-    stock: '',
-    unit: 'L'
+    name: "",
+    description: "",
+    price: "",
+    image: "",
+    stock: "",
+    unit: "L",
   });
 
   useEffect(() => {
@@ -23,10 +23,12 @@ const ProductsManagement = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/products`,
+      );
       setProducts(response.data);
     } catch (error) {
-      setError('Failed to fetch products');
+      setError("Failed to fetch products");
     } finally {
       setLoading(false);
     }
@@ -34,52 +36,52 @@ const ProductsManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const adminToken = localStorage.getItem('adminToken');
-      if (!adminToken) throw new Error('Not authenticated');
+      const adminToken = localStorage.getItem("adminToken");
+      if (!adminToken) throw new Error("Not authenticated");
 
       if (editingProduct) {
         await axios.put(
           `${import.meta.env.VITE_API_URL}/api/products/${editingProduct._id}`,
           formData,
           {
-            headers: { Authorization: `Bearer ${adminToken}` }
-          }
+            headers: { Authorization: `Bearer ${adminToken}` },
+          },
         );
       } else {
         await axios.post(
           `${import.meta.env.VITE_API_URL}/api/products`,
           formData,
           {
-            headers: { Authorization: `Bearer ${adminToken}` }
-          }
+            headers: { Authorization: `Bearer ${adminToken}` },
+          },
         );
       }
 
       setShowAddModal(false);
       setEditingProduct(null);
       setFormData({
-        name: '',
-        description: '',
-        price: '',
-        image: '',
-        stock: '',
-        unit: 'L'
+        name: "",
+        description: "",
+        price: "",
+        image: "",
+        stock: "",
+        unit: "L",
       });
       fetchProducts();
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to save product');
+      setError(error.response?.data?.message || "Failed to save product");
     } finally {
       setLoading(false);
     }
@@ -91,30 +93,31 @@ const ProductsManagement = () => {
       name: product.name,
       description: product.description,
       price: product.price.toString(),
-      image: product.image || '',
+      image: product.image || "",
       stock: product.stock.toString(),
-      unit: product.unit
+      unit: product.unit,
     });
     setShowAddModal(true);
   };
 
   const handleDelete = async (productId) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
     try {
-      const adminToken = localStorage.getItem('adminToken');
-      if (!adminToken) throw new Error('Not authenticated');
+      const adminToken = localStorage.getItem("adminToken");
+      if (!adminToken) throw new Error("Not authenticated");
 
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/api/products/${productId}`,
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
+          headers: { Authorization: `Bearer ${adminToken}` },
+        },
       );
 
       fetchProducts();
     } catch (error) {
-      setError('Failed to delete product');
+      setError("Failed to delete product");
     }
   };
 
@@ -145,26 +148,30 @@ const ProductsManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map(product => (
+            {products.map((product) => (
               <tr key={product._id}>
                 <td>
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
+                  <img
+                    src={product.image}
+                    alt={product.name}
                     className="product-thumbnail"
                   />
                 </td>
                 <td>{product.name}</td>
-                <td>₹{product.price.toFixed(2)}/{product.unit}</td>
-                <td>{product.stock} {product.unit}</td>
                 <td>
-                  <button 
+                  ₹{product.price.toFixed(2)}/{product.unit}
+                </td>
+                <td>
+                  {product.stock} {product.unit}
+                </td>
+                <td>
+                  <button
                     className="action-button edit-button"
                     onClick={() => handleEdit(product)}
                   >
                     Edit
                   </button>
-                  <button 
+                  <button
                     className="action-button delete-button"
                     onClick={() => handleDelete(product._id)}
                   >
@@ -180,7 +187,7 @@ const ProductsManagement = () => {
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
+            <h3>{editingProduct ? "Edit Product" : "Add New Product"}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Name</label>
@@ -258,22 +265,25 @@ const ProductsManagement = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" onClick={() => {
-                  setShowAddModal(false);
-                  setEditingProduct(null);
-                  setFormData({
-                    name: '',
-                    description: '',
-                    price: '',
-                    image: '',
-                    stock: '',
-                    unit: 'L'
-                  });
-                }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setEditingProduct(null);
+                    setFormData({
+                      name: "",
+                      description: "",
+                      price: "",
+                      image: "",
+                      stock: "",
+                      unit: "L",
+                    });
+                  }}
+                >
                   Cancel
                 </button>
                 <button type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : editingProduct ? 'Update' : 'Add'}
+                  {loading ? "Saving..." : editingProduct ? "Update" : "Add"}
                 </button>
               </div>
             </form>
@@ -284,4 +294,4 @@ const ProductsManagement = () => {
   );
 };
 
-export default ProductsManagement; 
+export default ProductsManagement;

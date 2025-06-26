@@ -1,18 +1,18 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   username: {
     type: String,
     required: true,
     unique: true,
     trim: true,
-    minlength: 3
+    minlength: 3,
   },
   email: {
     type: String,
@@ -21,36 +21,36 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         // If role is admin, email must end with admin.com
-        if (this.role === 'admin') {
-          return v.endsWith('admin.com');
+        if (this.role === "admin") {
+          return v.endsWith("admin.com");
         }
         return true;
       },
-      message: props => 'Admin email must end with admin.com'
-    }
+      message: (props) => "Admin email must end with admin.com",
+    },
   },
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 6,
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    enum: ["user", "admin"],
+    default: "user",
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -61,17 +61,18 @@ userSchema.pre('save', async function(next) {
 });
 
 // Method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Static method to create admin user
-userSchema.statics.createAdmin = async function(adminData) {
+userSchema.statics.createAdmin = async function (adminData) {
   const admin = new this({
     ...adminData,
-    role: 'admin'
+    role: "admin",
   });
   return admin.save();
 };
 
-module.exports = mongoose.model('User', userSchema); 
+const User = mongoose.model("User", userSchema);
+export default User;

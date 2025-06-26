@@ -11,7 +11,7 @@
 }
 
 .login-page::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -30,7 +30,9 @@
   width: 100%;
   max-width: 400px;
   transform: translateY(0);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -99,7 +101,7 @@
 }
 
 .login-type input[type="radio"]:checked::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -280,7 +282,7 @@
 }
 
 .admin-checkbox:checked::after {
-  content: '✓';
+  content: "✓";
   position: absolute;
   top: 50%;
   left: 50%;

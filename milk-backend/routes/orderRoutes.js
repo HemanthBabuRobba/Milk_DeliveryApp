@@ -1,26 +1,18 @@
-const express = require('express');
+import express from "express";
+import { createOrder, getUserOrders, getOrderDetails, cancelOrder } from "../controllers/orderController.js";
+import { authenticateToken } from "../middleware/auth.js";
+
 const router = express.Router();
-const {
-  createOrder,
-  getUserOrders,
-  getOrderDetails,
-  cancelOrder
-} = require('../controllers/orderController');
-const auth = require('../middleware/auth');
 
-// All order routes require authentication
-router.use(auth);
 
-// Create new order
-router.post('/', createOrder);
+router.post("/", authenticateToken, createOrder);
 
-// Get user's orders
-router.get('/', getUserOrders);
 
-// Get order details
-router.get('/:orderId', getOrderDetails);
+router.get("/", authenticateToken, getUserOrders);
 
-// Cancel order
-router.put('/:orderId/cancel', cancelOrder);
 
-module.exports = router;
+router.get("/:orderId", authenticateToken, getOrderDetails);
+
+router.put("/:orderId/cancel", authenticateToken, cancelOrder);
+
+export default router;

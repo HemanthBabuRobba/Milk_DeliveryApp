@@ -1,60 +1,67 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../utils/api';
-import './Signup.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { authAPI } from "../utils/api";
+import "./Signup.css";
 
 const Signup = ({ setIsUserLoggedIn }) => {
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validate inputs
-    if (!name.trim() || !username.trim() || !password.trim() || !confirmPassword.trim()) {
-      setError('Please fill in all fields');
+    if (
+      !name.trim() ||
+      !username.trim() ||
+      !password.trim() ||
+      !confirmPassword.trim()
+    ) {
+      setError("Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     try {
       const response = await authAPI.register({ name, username, password });
-      
+
       if (response.token) {
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem("user", JSON.stringify(response.user));
         setIsUserLoggedIn(true);
-        localStorage.setItem('isUserLoggedIn', 'true');
-        
+        localStorage.setItem("isUserLoggedIn", "true");
+
         // Show success message and redirect to home
-        alert('Account created successfully!');
-        navigate('/home');
+        alert("Account created successfully!");
+        navigate("/home");
       } else {
-        setError('Registration successful but no token received');
+        setError("Registration successful but no token received");
       }
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error("Signup error:", error);
       if (error.response) {
-        setError(error.response.data.message || 'Registration failed');
+        setError(error.response.data.message || "Registration failed");
       } else if (error.request) {
-        setError('No response from server. Please check your internet connection.');
+        setError(
+          "No response from server. Please check your internet connection.",
+        );
       } else {
-        setError('An error occurred. Please try again.');
+        setError("An error occurred. Please try again.");
       }
     }
   };
@@ -71,7 +78,10 @@ const Signup = ({ setIsUserLoggedIn }) => {
     <div className="signup-page">
       <div className="signup-intro">
         <h2>Join Our Community!</h2>
-        <p>Create an account to start ordering fresh milk delivered to your doorstep.</p>
+        <p>
+          Create an account to start ordering fresh milk delivered to your
+          doorstep.
+        </p>
       </div>
       <div className="signup-container">
         <h2 className="signup-title">Sign Up</h2>

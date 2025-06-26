@@ -1,22 +1,22 @@
-import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
   // User state
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
   // Cart state
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
   const [orderHistory, setOrderHistory] = useState(() => {
-    const savedOrders = localStorage.getItem('orderHistory');
+    const savedOrders = localStorage.getItem("orderHistory");
     return savedOrders ? JSON.parse(savedOrders) : [];
   });
 
@@ -25,14 +25,14 @@ const AppProvider = ({ children }) => {
 
   // Persist user
   useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
   }, [user]);
 
   // Persist cart for guests only
   useEffect(() => {
-    if (!user) localStorage.setItem('cart', JSON.stringify(cart));
-    else localStorage.removeItem('cart');
+    if (!user) localStorage.setItem("cart", JSON.stringify(cart));
+    else localStorage.removeItem("cart");
   }, [cart, user]);
 
   // On login, fetch cart and orders
@@ -42,7 +42,7 @@ const AppProvider = ({ children }) => {
       fetchOrders(user.userId);
     } else {
       // For guests, load cart from localStorage
-      const savedCart = localStorage.getItem('cart');
+      const savedCart = localStorage.getItem("cart");
       setCart(savedCart ? JSON.parse(savedCart) : []);
       setOrderHistory([]);
     }
@@ -67,12 +67,25 @@ const AppProvider = ({ children }) => {
   const addToCart = async (product, quantity = 1) => {
     if (!user) {
       // Guest cart (local only)
-      setCart(prev => {
-        const existing = prev.find(item => item.productId === product._id);
+      setCart((prev) => {
+        const existing = prev.find((item) => item.productId === product._id);
         if (existing) {
-          return prev.map(item => item.productId === product._id ? { ...item, quantity: item.quantity + quantity } : item);
+          return prev.map((item) =>
+            item.productId === product._id
+              ? { ...item, quantity: item.quantity + quantity }
+              : item,
+          );
         } else {
-          return [...prev, { productId: product._id, name: product.name, price: product.price, image: product.image, quantity }];
+          return [
+            ...prev,
+            {
+              productId: product._id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              quantity,
+            },
+          ];
         }
       });
       return;
@@ -80,21 +93,36 @@ const AppProvider = ({ children }) => {
     // Logged-in: persist in backend
     let currentCart = [];
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`,
+      );
       currentCart = res.data;
     } catch (err) {
       currentCart = [];
     }
-    const existing = currentCart.find(item => item.productId === product._id);
+    const existing = currentCart.find((item) => item.productId === product._id);
     let updatedCart;
     if (existing) {
-      updatedCart = currentCart.map(item => item.productId === product._id ? { ...item, quantity: item.quantity + quantity } : item);
+      updatedCart = currentCart.map((item) =>
+        item.productId === product._id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item,
+      );
     } else {
-      updatedCart = [...currentCart, { productId: product._id, name: product.name, price: product.price, image: product.image, quantity }];
+      updatedCart = [
+        ...currentCart,
+        {
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          quantity,
+        },
+      ];
     }
     await axios.post(`${import.meta.env.VITE_API_URL}/api/cart`, {
       userId: user.userId,
-      items: updatedCart
+      items: updatedCart,
     });
     setCart(updatedCart);
   };
@@ -102,7 +130,9 @@ const AppProvider = ({ children }) => {
   // Fetch cart
   const fetchCart = async (userId) => {
     if (!userId) return;
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart/${userId}`);
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/cart/${userId}`,
+    );
     setCart(res.data);
   };
 
@@ -113,9 +143,11 @@ const AppProvider = ({ children }) => {
     const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, {
       userId: user.userId,
       items: cart,
-      ...orderDetails
+      ...orderDetails,
     });
-    await axios.delete(`${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`);
+    await axios.delete(
+      `${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`,
+    );
     setCart([]);
     fetchOrders(user.userId);
     return res.data; // contains order with unique _id
@@ -124,7 +156,9 @@ const AppProvider = ({ children }) => {
   // Fetch orders
   const fetchOrders = async (userId) => {
     if (!userId) return;
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${userId}`);
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/orders/${userId}`,
+    );
     setOrders(res.data);
     setOrderHistory(res.data);
   };
@@ -135,15 +169,19 @@ const AppProvider = ({ children }) => {
     // Add all items from order to cart
     let currentCart = [];
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/cart/${user.userId}`,
+      );
       currentCart = res.data;
     } catch (err) {
       currentCart = [];
     }
     // Merge items
     const merged = [...currentCart];
-    order.items.forEach(orderItem => {
-      const existing = merged.find(item => item.productId === orderItem.productId);
+    order.items.forEach((orderItem) => {
+      const existing = merged.find(
+        (item) => item.productId === orderItem.productId,
+      );
       if (existing) {
         existing.quantity += orderItem.quantity;
       } else {
@@ -152,13 +190,28 @@ const AppProvider = ({ children }) => {
     });
     await axios.post(`${import.meta.env.VITE_API_URL}/api/cart`, {
       userId: user.userId,
-      items: merged
+      items: merged,
     });
     setCart(merged);
   };
 
   return (
-    <AppContext.Provider value={{ user, login, logout, cart, addToCart, orderHistory, products, fetchProducts, fetchCart, checkout, fetchOrders, reorder }}>
+    <AppContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        cart,
+        addToCart,
+        orderHistory,
+        products,
+        fetchProducts,
+        fetchCart,
+        checkout,
+        fetchOrders,
+        reorder,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

@@ -1,6 +1,6 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const Product = require('../models/Product');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Product = require("../models/Product");
 
 const sampleProducts = [
   {
@@ -9,15 +9,18 @@ const sampleProducts = [
     price: 60,
     unit: "L",
     stock: 100,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Buffalo Milk",
-    description: "Rich and creamy buffalo milk, perfect for making curd and sweets",
+    description:
+      "Rich and creamy buffalo milk, perfect for making curd and sweets",
     price: 80,
     unit: "L",
     stock: 50,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Skimmed Milk",
@@ -25,7 +28,8 @@ const sampleProducts = [
     price: 55,
     unit: "L",
     stock: 75,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Full Cream Milk",
@@ -33,7 +37,8 @@ const sampleProducts = [
     price: 70,
     unit: "L",
     stock: 60,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Organic Milk",
@@ -41,7 +46,8 @@ const sampleProducts = [
     price: 90,
     unit: "L",
     stock: 40,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Flavored Milk - Chocolate",
@@ -49,7 +55,8 @@ const sampleProducts = [
     price: 65,
     unit: "L",
     stock: 30,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Flavored Milk - Strawberry",
@@ -57,7 +64,8 @@ const sampleProducts = [
     price: 65,
     unit: "L",
     stock: 30,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
   },
   {
     name: "Curd",
@@ -65,8 +73,9 @@ const sampleProducts = [
     price: 40,
     unit: "kg",
     stock: 50,
-    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-  }
+    image:
+      "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  },
 ];
 
 async function addSampleProducts() {
@@ -74,24 +83,24 @@ async function addSampleProducts() {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
 
     // Clear existing products
     await Product.deleteMany({});
-    console.log('Cleared existing products');
+    console.log("Cleared existing products");
 
     // Add sample products
     const products = await Product.insertMany(sampleProducts);
-    console.log('Added sample products:', products.length);
+    console.log("Added sample products:", products.length);
 
-    console.log('Sample products added successfully!');
+    console.log("Sample products added successfully!");
     process.exit(0);
   } catch (error) {
-    console.error('Error adding sample products:', error);
+    console.error("Error adding sample products:", error);
     process.exit(1);
   }
 }
 
-addSampleProducts(); 
+addSampleProducts();

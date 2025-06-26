@@ -1,27 +1,32 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import './Checkout.css';
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import "./Checkout.css";
 
 const Checkout = () => {
   const location = useLocation();
-  const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
+  const { cartItems } = location.state || {
+    cartItems: [],
+  };
 
   const [customerDetails, setCustomerDetails] = useState({
-    fullName: '',
-    mobileNumber: '',
-    address: '',
-    landmark: '',
+    fullName: "",
+    mobileNumber: "",
+    address: "",
+    landmark: "",
   });
   const [deliveryPreferences, setDeliveryPreferences] = useState({
-    deliveryDate: 'Today',
-    timeSlot: 'Morning 6–9 AM',
+    deliveryDate: "Today",
+    timeSlot: "Morning 6–9 AM",
   });
-  const [orderNotes, setOrderNotes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const [orderNotes, setOrderNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
 
   const deliveryCharge = 2.0; // Example delivery charge
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
+  );
   const finalTotal = subtotal + deliveryCharge;
 
   const handleInputChange = (e) => {
@@ -31,7 +36,10 @@ const Checkout = () => {
 
   const handleDeliveryPreferenceChange = (e) => {
     const { name, value } = e.target;
-    setDeliveryPreferences((prevPreferences) => ({ ...prevPreferences, [name]: value }));
+    setDeliveryPreferences((prevPreferences) => ({
+      ...prevPreferences,
+      [name]: value,
+    }));
   };
 
   const handlePlaceOrder = () => {
@@ -44,15 +52,16 @@ const Checkout = () => {
       finalTotal,
     };
 
-    axios.post(`${process.env.REACT_APP_API_URL}/api/orders`, orderData)
-      .then(res => {
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/api/orders`, orderData)
+      .then(() => {
         // handle success
-        alert('Order placed successfully!');
+        alert("Order placed successfully!");
       })
-      .catch(err => {
+      .catch((err) => {
         // handle error
-        console.error('Error placing order:', err);
-        alert('There was an error placing your order. Please try again.');
+        console.error("Error placing order:", err);
+        alert("There was an error placing your order. Please try again.");
       });
   };
 
@@ -65,8 +74,12 @@ const Checkout = () => {
         <h2>Order Summary</h2>
         <ul>
           {cartItems.map((item) => (
-            <li key={item._id || item.id || `item-${item.name}-${item.quantity}`}>
-              <span>{item.name} - {item.quantity}L</span>
+            <li
+              key={item._id || item.id || `item-${item.name}-${item.quantity}`}
+            >
+              <span>
+                {item.name} - {item.quantity}L
+              </span>
               <span>₹{(item.price * item.quantity).toFixed(2)}</span>
             </li>
           ))}
@@ -121,8 +134,12 @@ const Checkout = () => {
           value={deliveryPreferences.deliveryDate}
           onChange={handleDeliveryPreferenceChange}
         >
-          <option value="Today" key="today">Today</option>
-          <option value="Tomorrow" key="tomorrow">Tomorrow</option>
+          <option value="Today" key="today">
+            Today
+          </option>
+          <option value="Tomorrow" key="tomorrow">
+            Tomorrow
+          </option>
         </select>
         <label>Preferred Time Slot:</label>
         <select
@@ -130,8 +147,12 @@ const Checkout = () => {
           value={deliveryPreferences.timeSlot}
           onChange={handleDeliveryPreferenceChange}
         >
-          <option value="Morning 6–9 AM" key="morning">Morning 6–9 AM</option>
-          <option value="Evening 5–8 PM" key="evening">Evening 5–8 PM</option>
+          <option value="Morning 6–9 AM" key="morning">
+            Morning 6–9 AM
+          </option>
+          <option value="Evening 5–8 PM" key="evening">
+            Evening 5–8 PM
+          </option>
         </select>
       </div>
 
@@ -152,9 +173,15 @@ const Checkout = () => {
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
         >
-          <option value="Cash on Delivery" key="cod">Cash on Delivery</option>
-          <option value="UPI Payment" key="upi">UPI Payment</option>
-          <option value="Pay Later" key="paylater">Pay Later</option>
+          <option value="Cash on Delivery" key="cod">
+            Cash on Delivery
+          </option>
+          <option value="UPI Payment" key="upi">
+            UPI Payment
+          </option>
+          <option value="Pay Later" key="paylater">
+            Pay Later
+          </option>
         </select>
       </div>
 
@@ -165,7 +192,10 @@ const Checkout = () => {
 
       {/* Trust Section */}
       <div className="trust-section">
-        <p>🔒 We respect your privacy. Your contact info will only be used for delivery.</p>
+        <p>
+          🔒 We respect your privacy. Your contact info will only be used for
+          delivery.
+        </p>
       </div>
     </div>
   );

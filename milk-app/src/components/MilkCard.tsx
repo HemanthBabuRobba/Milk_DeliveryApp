@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './MilkCard.css';
+import React, { useState } from "react";
+import "./MilkCard.css";
 
 interface MilkCardProps {
   title: string;
@@ -9,10 +9,18 @@ interface MilkCardProps {
   onPay: (quantity: number) => void;
 }
 
-const MilkCard: React.FC<MilkCardProps> = ({ title, description, imageUrl, price, onPay }) => {
+const MilkCard: React.FC<MilkCardProps> = ({
+  title,
+  description,
+  imageUrl,
+  price,
+  onPay,
+}) => {
   const [quantity, setQuantity] = useState(0.5); // Default to half-liter
 
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+  const handleQuantityChange = (
+    event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
+  ) => {
     const value = parseFloat(event.target.value);
     if (!isNaN(value) && value > 0) {
       setQuantity(value);

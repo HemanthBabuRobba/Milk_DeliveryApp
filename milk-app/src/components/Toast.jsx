@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
-import { FaCheck, FaExclamationTriangle, FaInfoCircle, FaTimes } from 'react-icons/fa';
-import './Toast.css';
+import React, { useEffect } from "react";
+import {
+  FaCheck,
+  FaExclamationTriangle,
+  FaInfoCircle,
+  FaTimes,
+} from "react-icons/fa";
+import "./Toast.css";
 
-const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
+const Toast = ({ message, type = "info", onClose, duration = 3000 }) => {
   useEffect(() => {
     if (duration) {
       const timer = setTimeout(() => {
@@ -14,11 +19,11 @@ const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
 
   const getIcon = () => {
     switch (type) {
-      case 'success':
+      case "success":
         return <FaCheck />;
-      case 'error':
+      case "error":
         return <FaExclamationTriangle />;
-      case 'warning':
+      case "warning":
         return <FaExclamationTriangle />;
       default:
         return <FaInfoCircle />;
@@ -36,4 +41,4 @@ const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
   );
 };
 
-export default Toast; 
+export default Toast;

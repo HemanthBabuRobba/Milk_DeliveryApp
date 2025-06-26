@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
@@ -41,7 +41,9 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 button:hover {

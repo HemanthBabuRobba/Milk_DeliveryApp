@@ -26,13 +26,15 @@
 }
 
 /* Typography */
-h1, h2, h3 {
-  font-family: 'Poppins', sans-serif;
+h1,
+h2,
+h3 {
+  font-family: "Poppins", sans-serif;
   color: #34495e;
 }
 
 p {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #7f8c8d;
   line-height: 1.6;
 }
@@ -46,7 +48,9 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 button:hover {
@@ -67,23 +71,23 @@ a:hover {
 
 /* App Specific Styles */
 .app-title {
-    font-size: 3rem;
-    margin-bottom: 2rem;
-    color: #34495e;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .milk-card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    width: 100%;
-    max-width: 1200px;
-    padding: 1rem;
-    justify-content: center; /* Centers the grid horizontally */
-  }
-  .about-section {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  color: #34495e;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.milk-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  padding: 1rem;
+  justify-content: center; /* Centers the grid horizontally */
+}
+.about-section {
   width: 100vw; /* Full width of the viewport */
   background-color: #f9f9f9; /* Light background color for contrast */
   padding: 2rem;

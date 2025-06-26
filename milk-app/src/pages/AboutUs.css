@@ -1,7 +1,11 @@
 .about-us-page {
   text-align: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Light blue gradient */
+  background: linear-gradient(
+    135deg,
+    #e3f2fd,
+    #bbdefb
+  ); /* Light blue gradient */
   min-height: 100vh;
   display: flex;
   flex-direction: column;

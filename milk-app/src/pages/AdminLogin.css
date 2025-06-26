@@ -40,7 +40,9 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .form-group input:focus {
@@ -72,7 +74,11 @@
 .login-button {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-dark) 100%
+  );
   color: white;
   border: none;
   border-radius: 8px;
@@ -129,4 +135,4 @@
   .login-button {
     padding: 0.8rem;
   }
-} 
+}

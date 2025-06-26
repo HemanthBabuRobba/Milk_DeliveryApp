@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './AdminDashboard.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./AdminDashboard.css";
+import MilkImage from "../assets/LogoPic.jpg";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState("products");
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAdminLoggedIn');
-    localStorage.removeItem('user');
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("isAdminLoggedIn");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   return (
@@ -22,25 +23,25 @@ const AdminDashboard = () => {
         </div>
         <ul className="admin-nav">
           <li>
-            <button 
-              className={activeTab === 'products' ? 'active' : ''} 
-              onClick={() => setActiveTab('products')}
+            <button
+              className={activeTab === "products" ? "active" : ""}
+              onClick={() => setActiveTab("products")}
             >
               Products
             </button>
           </li>
           <li>
-            <button 
-              className={activeTab === 'orders' ? 'active' : ''} 
-              onClick={() => setActiveTab('orders')}
+            <button
+              className={activeTab === "orders" ? "active" : ""}
+              onClick={() => setActiveTab("orders")}
             >
               Orders
             </button>
           </li>
           <li>
-            <button 
-              className={activeTab === 'users' ? 'active' : ''} 
-              onClick={() => setActiveTab('users')}
+            <button
+              className={activeTab === "users" ? "active" : ""}
+              onClick={() => setActiveTab("users")}
             >
               Users
             </button>
@@ -53,13 +54,15 @@ const AdminDashboard = () => {
 
       <main className="admin-content">
         <header className="admin-header">
-          <h1>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Management</h1>
+          <h1>
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Management
+          </h1>
         </header>
 
         <div className="admin-main-content">
-          {activeTab === 'products' && <ProductsManagement />}
-          {activeTab === 'orders' && <OrdersManagement />}
-          {activeTab === 'users' && <UsersManagement />}
+          {activeTab === "products" && <ProductsManagement />}
+          {activeTab === "orders" && <OrdersManagement />}
+          {activeTab === "users" && <UsersManagement />}
         </div>
       </main>
     </div>
@@ -70,16 +73,16 @@ const AdminDashboard = () => {
 const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    description: '',
-    image: '',
-    quantity: '',
-    unit: ''
+    name: "",
+    price: "",
+    description: "",
+    image: "",
+    quantity: "",
+    unit: "",
   });
 
   useEffect(() => {
@@ -88,17 +91,17 @@ const ProductsManagement = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/products`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setProducts(response.data);
     } catch (error) {
-      setError('Failed to fetch products');
-      console.error('Error fetching products:', error);
+      setError("Failed to fetch products");
+      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
@@ -106,20 +109,20 @@ const ProductsManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        quantity: parseInt(formData.quantity)
+        quantity: parseInt(formData.quantity),
       };
 
       if (editingProduct) {
@@ -127,71 +130,71 @@ const ProductsManagement = () => {
           `${import.meta.env.VITE_API_URL}/api/products/${editingProduct._id}`,
           productData,
           {
-            headers: { 
+            headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+              "Content-Type": "application/json",
+            },
+          },
         );
       } else {
         await axios.post(
           `${import.meta.env.VITE_API_URL}/api/products`,
           productData,
           {
-            headers: { 
+            headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+              "Content-Type": "application/json",
+            },
+          },
         );
       }
 
       setShowModal(false);
       setFormData({
-        name: '',
-        price: '',
-        description: '',
-        image: '',
-        quantity: '',
-        unit: ''
+        name: "",
+        price: "",
+        description: "",
+        image: "",
+        quantity: "",
+        unit: "",
       });
       setEditingProduct(null);
       fetchProducts();
     } catch (error) {
-      setError('Failed to save product');
-      console.error('Error saving product:', error);
+      setError("Failed to save product");
+      console.error("Error saving product:", error);
     }
   };
 
   const handleEdit = (product) => {
     if (!product) return;
-    
+
     setEditingProduct(product);
     setFormData({
-      name: product.name || '',
-      price: product.price ? product.price.toString() : '',
-      description: product.description || '',
-      image: product.image || '',
-      quantity: product.quantity ? product.quantity.toString() : '',
-      unit: product.unit || 'L'
+      name: product.name || "",
+      price: product.price ? product.price.toString() : "",
+      description: product.description || "",
+      image: product.image || "",
+      quantity: product.quantity ? product.quantity.toString() : "",
+      unit: product.unit || "L",
     });
     setShowModal(true);
   };
 
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         await axios.delete(
           `${import.meta.env.VITE_API_URL}/api/products/${productId}`,
           {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+            headers: { Authorization: `Bearer ${token}` },
+          },
         );
         fetchProducts();
       } catch (error) {
-        setError('Failed to delete product');
-        console.error('Error deleting product:', error);
+        setError("Failed to delete product");
+        console.error("Error deleting product:", error);
       }
     }
   };
@@ -203,18 +206,21 @@ const ProductsManagement = () => {
     <div className="products-management">
       <div className="section-header">
         <h2>Products Management</h2>
-        <button className="add-button" onClick={() => {
-          setEditingProduct(null);
-          setFormData({
-            name: '',
-            price: '',
-            description: '',
-            image: '',
-            quantity: '',
-            unit: ''
-          });
-          setShowModal(true);
-        }}>
+        <button
+          className="add-button"
+          onClick={() => {
+            setEditingProduct(null);
+            setFormData({
+              name: "",
+              price: "",
+              description: "",
+              image: "",
+              quantity: "",
+              unit: "",
+            });
+            setShowModal(true);
+          }}
+        >
           Add New Product
         </button>
       </div>
@@ -235,9 +241,9 @@ const ProductsManagement = () => {
             {products.map((product) => (
               <tr key={product._id}>
                 <td>
-                  <img 
-                    src={product.image || MilkImage} 
-                    alt={product.name} 
+                  <img
+                    src={product.image || MilkImage}
+                    alt={product.name}
                     className="product-thumbnail"
                   />
                 </td>
@@ -247,13 +253,13 @@ const ProductsManagement = () => {
                 <td>{product.unit}</td>
                 <td>
                   <div className="action-buttons">
-                    <button 
+                    <button
                       className="edit-button"
                       onClick={() => handleEdit(product)}
                     >
                       Edit
                     </button>
-                    <button 
+                    <button
                       className="delete-button"
                       onClick={() => handleDelete(product._id)}
                     >
@@ -270,7 +276,7 @@ const ProductsManagement = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
+            <h3>{editingProduct ? "Edit Product" : "Add New Product"}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Name:</label>
@@ -335,21 +341,21 @@ const ProductsManagement = () => {
               </div>
               <div className="modal-actions">
                 <button type="submit" className="save-button">
-                  {editingProduct ? 'Update' : 'Add'} Product
+                  {editingProduct ? "Update" : "Add"} Product
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="cancel-button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingProduct(null);
                     setFormData({
-                      name: '',
-                      price: '',
-                      description: '',
-                      image: '',
-                      quantity: '',
-                      unit: ''
+                      name: "",
+                      price: "",
+                      description: "",
+                      image: "",
+                      quantity: "",
+                      unit: "",
                     });
                   }}
                 >
@@ -368,7 +374,7 @@ const ProductsManagement = () => {
 const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchOrders();
@@ -376,29 +382,32 @@ const OrdersManagement = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/orders`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setOrders(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch orders');
+      setError("Failed to fetch orders");
       setLoading(false);
     }
   };
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.put(
         `${import.meta.env.VITE_API_URL}/api/orders/${orderId}`,
         { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       fetchOrders();
     } catch (err) {
-      setError('Failed to update order status');
+      setError("Failed to update order status");
     }
   };
 
@@ -426,14 +435,16 @@ const OrdersManagement = () => {
             {orders.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
-                <td>{order.user?.name || 'N/A'}</td>
+                <td>{order.user?.name || "N/A"}</td>
                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>${order.total}</td>
                 <td>{order.status}</td>
                 <td>
                   <select
                     value={order.status}
-                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                    onChange={(e) =>
+                      updateOrderStatus(order._id, e.target.value)
+                    }
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -455,7 +466,7 @@ const OrdersManagement = () => {
 const UsersManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -463,17 +474,17 @@ const UsersManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/admin/users`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setUsers(response.data);
     } catch (error) {
-      setError('Failed to fetch users');
-      console.error('Error fetching users:', error);
+      setError("Failed to fetch users");
+      console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
@@ -481,18 +492,18 @@ const UsersManagement = () => {
 
   const toggleUserStatus = async (userId, isActive) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.put(
         `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`,
         { isActive },
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       fetchUsers();
     } catch (error) {
-      setError('Failed to update user status');
-      console.error('Error updating user status:', error);
+      setError("Failed to update user status");
+      console.error("Error updating user status:", error);
     }
   };
 
@@ -521,13 +532,13 @@ const UsersManagement = () => {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
-                <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+                <td>{user.isActive ? "Active" : "Inactive"}</td>
                 <td>
                   <button
-                    className={`status-button ${user.isActive ? 'deactivate' : 'activate'}`}
+                    className={`status-button ${user.isActive ? "deactivate" : "activate"}`}
                     onClick={() => toggleUserStatus(user._id, !user.isActive)}
                   >
-                    {user.isActive ? 'Deactivate' : 'Activate'}
+                    {user.isActive ? "Deactivate" : "Activate"}
                   </button>
                 </td>
               </tr>
@@ -539,4 +550,4 @@ const UsersManagement = () => {
   );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;

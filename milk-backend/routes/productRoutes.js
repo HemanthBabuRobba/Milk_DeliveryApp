@@ -1,21 +1,16 @@
-const express = require('express');
+import express from "express";
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from "../controllers/productController.js";
+import { authenticateToken, isAdmin } from "../middleware/auth.js";
+
 const router = express.Router();
-const {
-  getProducts,
-  getProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct
-} = require('../controllers/productController');
-const { authenticateToken, isAdmin } = require('../middleware/auth');
 
 // Public routes
-router.get('/', getProducts);
-router.get('/:id', getProduct);
+router.get("/", getProducts);
+router.get("/:id", getProduct);
 
 // Admin routes
-router.post('/', authenticateToken, isAdmin, createProduct);
-router.put('/:id', authenticateToken, isAdmin, updateProduct);
-router.delete('/:id', authenticateToken, isAdmin, deleteProduct);
+router.post("/", authenticateToken, isAdmin, createProduct);
+router.put("/:id", authenticateToken, isAdmin, updateProduct);
+router.delete("/:id", authenticateToken, isAdmin, deleteProduct);
 
-module.exports = router;
+export default router;

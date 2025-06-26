@@ -1,9 +1,9 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute = ({ isLoggedIn, isAdmin, children }) => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;

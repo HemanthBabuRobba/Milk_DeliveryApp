@@ -1,79 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import './Login.css';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import "./Login.css";
+import { useNavigate, Link } from "react-router-dom";
+import { authAPI } from "../utils/api";
 
 const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const isUserLoggedIn = localStorage.getItem('isUserLoggedIn') === 'true';
-    const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+    const token = localStorage.getItem("token");
+    const isUserLoggedIn = localStorage.getItem("isUserLoggedIn") === "true";
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
 
     if (token && isUserLoggedIn) {
-      navigate('/home', { replace: true });
+      navigate("/home", { replace: true });
     } else if (token && isAdminLoggedIn) {
-      navigate('/admin', { replace: true });
+      navigate("/admin", { replace: true });
     }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!email || !password) {
-      setError('Please enter both email and password');
+      setError("Please enter both email and password");
       return;
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       return;
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        { email, password, isAdmin }
-      );
-
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
+      const data = await authAPI.login({ email, password, isAdmin });
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userType", isAdmin ? "admin" : "user");
         if (isAdmin) {
           setIsAdminLoggedIn(true);
           setIsUserLoggedIn(false);
-          localStorage.setItem('isAdminLoggedIn', 'true');
-          localStorage.setItem('isUserLoggedIn', 'false');
-          navigate('/admin', { replace: true });
+          localStorage.setItem("isAdminLoggedIn", "true");
+          localStorage.setItem("isUserLoggedIn", "false");
+          navigate("/admin", { replace: true });
         } else {
           setIsUserLoggedIn(true);
           setIsAdminLoggedIn(false);
-          localStorage.setItem('isUserLoggedIn', 'true');
-          localStorage.setItem('isAdminLoggedIn', 'false');
-          navigate('/home', { replace: true });
+          localStorage.setItem("isUserLoggedIn", "true");
+          localStorage.setItem("isAdminLoggedIn", "false");
+          navigate("/home", { replace: true });
         }
       } else {
-        setError('Invalid response from server');
+        setError("Invalid response from server");
       }
     } catch (err) {
-      console.error('Login error:', err);
-      if (err.response) {
-        setError(err.response.data.message || 'Invalid credentials');
-      } else if (err.request) {
-        setError('No response from server. Please check your internet connection.');
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+      setError(err.message || "Login failed");
     }
   };
 
@@ -126,8 +115,8 @@ const Login = ({ setIsUserLoggedIn, setIsAdminLoggedIn }) => {
                 checked={isAdmin}
                 onChange={(e) => {
                   setIsAdmin(e.target.checked);
-                  setEmail('');
-                  setPassword('');
+                  setEmail("");
+                  setPassword("");
                 }}
               />
               Login as Admin

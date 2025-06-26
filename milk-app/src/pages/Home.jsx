@@ -1,33 +1,22 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Home.css';
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Home.css";
 
 const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
-  }, []); // Empty dependency array since we only want to check once on mount
-
-  const handleLogout = () => {
-    // Clear all auth-related data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('isUserLoggedIn');
-    localStorage.removeItem('isAdminLoggedIn');
-    
-    // Navigate to login page with replace to prevent back navigation
-    navigate('/', { replace: true });
-  };
+  }, [navigate]);
 
   return (
     <div className="home-page">
       <h1>Welcome to SwachMilk</h1>
       <p>Your one-stop solution for fresh milk delivery</p>
-      
+
       <div className="home-links">
         <Link to="/product" className="home-button">
           Browse Products
@@ -46,9 +35,10 @@ const Home = () => {
       <div className="about-section">
         <h2 className="about-title">About Our Service</h2>
         <p className="about-text">
-          We deliver fresh, high-quality milk directly to your doorstep. Our commitment to quality and 
-          customer satisfaction makes us the preferred choice for daily milk delivery. Choose from our 
-          wide range of dairy products and enjoy the convenience of home delivery.
+          We deliver fresh, high-quality milk directly to your doorstep. Our
+          commitment to quality and customer satisfaction makes us the preferred
+          choice for daily milk delivery. Choose from our wide range of dairy
+          products and enjoy the convenience of home delivery.
         </p>
       </div>
     </div>

@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
-import Toast from '../components/Toast';
+import React, { createContext, useContext, useState } from "react";
+import Toast from "../components/Toast";
 
 const ToastContext = createContext();
 
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 };
@@ -14,7 +14,7 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = (message, type = 'info', duration = 3000) => {
+  const addToast = (message, type = "info", duration = 3000) => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type, duration }]);
   };
@@ -24,23 +24,25 @@ export const ToastProvider = ({ children }) => {
   };
 
   const showSuccess = (message, duration) => {
-    addToast(message, 'success', duration);
+    addToast(message, "success", duration);
   };
 
   const showError = (message, duration) => {
-    addToast(message, 'error', duration);
+    addToast(message, "error", duration);
   };
 
   const showWarning = (message, duration) => {
-    addToast(message, 'warning', duration);
+    addToast(message, "warning", duration);
   };
 
   const showInfo = (message, duration) => {
-    addToast(message, 'info', duration);
+    addToast(message, "info", duration);
   };
 
   return (
-    <ToastContext.Provider value={{ showSuccess, showError, showWarning, showInfo }}>
+    <ToastContext.Provider
+      value={{ showSuccess, showError, showWarning, showInfo }}
+    >
       {children}
       <div className="toast-container">
         {toasts.map((toast) => (
@@ -55,4 +57,4 @@ export const ToastProvider = ({ children }) => {
       </div>
     </ToastContext.Provider>
   );
-}; 
+};
